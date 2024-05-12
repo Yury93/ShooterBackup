@@ -15,7 +15,7 @@ public class SensivitySettings : MonoBehaviour
     {
         close.onClick.AddListener(Close);
         save.onClick.AddListener(Save);
-        Debug.Log("HAS SAVES SETTING?");
+        Debug.LogError("HAS SAVES SETTING?");
         if (ValueSlider == 0)
         {
             slider.value = 0.5f;

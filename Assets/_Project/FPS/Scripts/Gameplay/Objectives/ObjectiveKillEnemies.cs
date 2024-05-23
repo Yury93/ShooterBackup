@@ -1,5 +1,6 @@
 ﻿using Unity.FPS.Game;
 using UnityEngine;
+using YG;
 
 namespace Unity.FPS.Gameplay
 {
@@ -29,6 +30,8 @@ namespace Unity.FPS.Gameplay
 
             if (string.IsNullOrEmpty(Description))
                 Description = GetUpdatedCounterAmount();
+
+            m_KillTotal = YandexGame.savesData.enemyDied;
         }
 
         void OnEnemyKilled(EnemyKillEvent evt)
@@ -68,7 +71,7 @@ namespace Unity.FPS.Gameplay
 
         string GetUpdatedCounterAmount()
         {
-            return m_KillTotal + " / " + KillsToCompleteObjective;
+            return m_KillTotal.ToString();
         }
 
         void OnDestroy()

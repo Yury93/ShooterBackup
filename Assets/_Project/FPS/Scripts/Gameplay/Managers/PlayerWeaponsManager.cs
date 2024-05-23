@@ -169,6 +169,7 @@ namespace Unity.FPS.Gameplay
                 else
                 {
                     switchWeaponInput = m_InputHandler.GetSelectWeaponInput();
+                    Debug.Log(switchWeaponInput);
                     if (switchWeaponInput != 0)
                     {
                         if (GetWeaponAtSlotIndex(switchWeaponInput - 1) != null)

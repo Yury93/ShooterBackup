@@ -1,10 +1,11 @@
-using System;
+
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using Unity.Tutorials.Core.Editor;
+using System.Linq;
+using TMPro; 
 using UnityEngine;
 using UnityEngine.UI;
+using YG;
 
 public class LevelService : MonoBehaviour
 {
@@ -30,33 +31,33 @@ public class LevelService : MonoBehaviour
     {
        WeaponService.gameObject.SetActive(true);
         gameObject.SetActive(false);
-        if(LevelButton.SelectScene.IsNullOrEmpty())
+        if(string.IsNullOrEmpty(LevelButton.SelectScene))
         {
             LevelButton.SelectScene = levels[0].nameLoaded;
         }
         Debug.Log(LevelButton.SelectScene);
     }
 
-    void Start()
+    IEnumerator Start()
     {
-        sensivitySettings.Init();
+        sensivitySettings.Init(this);
         settings.onClick.AddListener(sensivitySettings.Open);
         levels.ForEach(l => l.onClick += (l) => ClickLevel(l));
-        levels[0].isSelect = true;
+
+       
         levels.ForEach(l => l.ShowState());
         confirmPopup.Init();
-        resourceText.text = "Очков: "+ resourceSystem.money.ToString();
+        resourceText.text =   resourceSystem.money.ToString();
+
+        yield return new WaitForSeconds(0.1f);
+       var level = levels.FirstOrDefault(l=>l.idButton ==  YandexGame.savesData.selectedLevel);
+        if(level != null) 
+        LevelButton.SelectScene  = level.nameLoaded;
     }
 
     public void ClickLevel(LevelButton button)
     {
-        levels.ForEach(l =>
-        {
-            if (button.nameScene != l.nameScene && button.state == LevelButton.StateLevel.open)
-            {
-                l.isSelect = false;
-            }
-        });
+         
             if(button.state == LevelButton.StateLevel.closed)
             {
                 confirmPopup.OpenButtonLevel(button);
@@ -68,6 +69,17 @@ public class LevelService : MonoBehaviour
                 levels.ForEach((l) => l.ShowState());
             button.ShowState();
         //});
-        resourceText.text = "Очков: " + resourceSystem.money.ToString();
+        resourceText.text =   resourceSystem.money.ToString();
+    }
+    private void OnApplicationFocus(bool focus)
+    {
+        if (focus)
+        {
+            Camera.main.GetComponent<AudioListener>().enabled = true;
+        }
+        else
+        {
+            Camera.main.GetComponent<AudioListener>().enabled = false;
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Unity.FPS.Game;
+using Unity.FPS.UI;
 using UnityEngine;
 
 namespace Unity.FPS.Gameplay
@@ -266,26 +267,39 @@ namespace Unity.FPS.Gameplay
         {
             if (CanProcessInput())
             {
-                if (Input.GetKeyDown(KeyCode.Alpha1))
-                    return 1;
-                else if (Input.GetKeyDown(KeyCode.Alpha2))
-                    return 2;
-                else if (Input.GetKeyDown(KeyCode.Alpha3))
-                    return 3;
-                else if (Input.GetKeyDown(KeyCode.Alpha4))
-                    return 4;
-                else if (Input.GetKeyDown(KeyCode.Alpha5))
-                    return 5;
-                else if (Input.GetKeyDown(KeyCode.Alpha6))
-                    return 6;
-                else if (Input.GetKeyDown(KeyCode.Alpha7))
-                    return 7;
-                else if (Input.GetKeyDown(KeyCode.Alpha8))
-                    return 8;
-                else if (Input.GetKeyDown(KeyCode.Alpha9))
-                    return 9;
+                if (WeaponHUDManager.instance.isMobile == false)
+                {
+                    if (Input.GetKeyDown(KeyCode.Alpha1))
+                        return 1;
+                    else if (Input.GetKeyDown(KeyCode.Alpha2))
+                        return 2;
+                    else if (Input.GetKeyDown(KeyCode.Alpha3))
+                        return 3;
+                    else if (Input.GetKeyDown(KeyCode.Alpha4))
+                        return 4;
+                    else if (Input.GetKeyDown(KeyCode.Alpha5))
+                        return 5;
+                    else if (Input.GetKeyDown(KeyCode.Alpha6))
+                        return 6;
+                    else if (Input.GetKeyDown(KeyCode.Alpha7))
+                        return 7;
+                    else if (Input.GetKeyDown(KeyCode.Alpha8))
+                        return 8;
+                    else if (Input.GetKeyDown(KeyCode.Alpha9))
+                        return 9;
+                    else
+                        return 0;
+                }
                 else
-                    return 0;
+                {
+                   var hud = WeaponHUDManager.instance;
+                    if (hud.weaponFirst.Pressed)
+                        return 1;
+                    else if (hud.weaponSecond.Pressed)
+                        return 2;
+                    else
+                        return 0;
+                }
             }
 
             return 0;

@@ -49,18 +49,21 @@ namespace Unity.FPS.UI
             {
             }
             else
-            { 
+            {
                 // Lock cursor when clicking outside of menu
-                if (!MenuRoot.activeSelf && Input.GetMouseButtonDown(0))
+                if (FinalPopup.IsGameOver == false)
                 {
-                    Cursor.lockState = CursorLockMode.Locked;
-                    Cursor.visible = false;
-                }
+                    if (!MenuRoot.activeSelf && Input.GetMouseButtonDown(0))
+                    {
+                        Cursor.lockState = CursorLockMode.Locked;
+                        Cursor.visible = false;
+                    }
 
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    Cursor.lockState = CursorLockMode.None;
-                    Cursor.visible = true;
+                    if (Input.GetKeyDown(KeyCode.Escape))
+                    {
+                        Cursor.lockState = CursorLockMode.None;
+                        Cursor.visible = true;
+                    }
                 }
             }
 
@@ -105,10 +108,13 @@ namespace Unity.FPS.UI
                 }
                 else
                 {
-                    Cursor.lockState = CursorLockMode.Locked;
-                    Cursor.visible = false;
-                    Time.timeScale = 1f;
-                    AudioUtility.SetMasterVolume(1);
+                    if (FinalPopup.IsGameOver == false)
+                    {
+                        Cursor.lockState = CursorLockMode.Locked;
+                        Cursor.visible = false;
+                        Time.timeScale = 1f;
+                        AudioUtility.SetMasterVolume(1);
+                    }
                 }
             }
         }

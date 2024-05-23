@@ -173,7 +173,7 @@ namespace Unity.FPS.Gameplay
             SetCrouchingState(false, true);
             UpdateCharacterHeight(true);
             RotationSpeed = SensivitySettings.ValueSlider;
-           // RespawnPosition();
+            RespawnPosition();
         }
         public void RespawnPosition()
         {

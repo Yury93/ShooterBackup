@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using YG;
 
 public class WeaponService : MonoBehaviour
 {
@@ -28,13 +29,22 @@ public class WeaponService : MonoBehaviour
     {
         firstWeapons.ForEach(w=>w.Init());
         secondWeapons.ForEach(w => w.Init());
-        SelectWeapons();
+
         firstWeapons.ForEach(w => w.onClick += OnClickWeapon);
         secondWeapons.ForEach(w => w.onClick += OnClickWeapon);
         firstWeapons.ForEach(w => w.onBuy += OnBuyWeapon);
         secondWeapons.ForEach(w => w.onBuy += OnBuyWeapon);
         playButton.onClick.AddListener(Play);
+        StartCoroutine(CorSelectWeapon());
+        IEnumerator CorSelectWeapon()
+        {
+            yield return new WaitForSeconds(0.1f);
+            SelectWeapons();
+        }
     }
+     
+
+    
 
     private void Play()
     {
@@ -70,7 +80,17 @@ public class WeaponService : MonoBehaviour
             button.Select();
             secondWeapon = button;
         }
-        moneyText.text = "Очков: " + ResourceSystem.instance .money.ToString();
+        moneyText.text = ResourceSystem.instance .money.ToString();
+
+        foreach (var item in firstWeapons)
+        {
+            item.ShowState();
+        }
+        foreach (var item in secondWeapons)
+        {
+            item.ShowState();
+        }
+        Saver.instance.Save();
     }
 
     private void OnClickWeapon(WeaponButton button)
@@ -81,10 +101,13 @@ public class WeaponService : MonoBehaviour
         }
         else
         {
-            if(button.typeWeapon == WeaponButton.TypeWeapon.first)
+            
+            if (button.typeWeapon == WeaponButton.TypeWeapon.first)
             {
                 firstWeapons.ForEach(w => w.Deselect());
+               
                 button.Select();
+           
                 firstWeapon = button;
             }
             if (button.typeWeapon == WeaponButton.TypeWeapon.second)
@@ -93,12 +116,14 @@ public class WeaponService : MonoBehaviour
                 button.Select();
                 secondWeapon = button;
             }
+         
+            Saver.instance.Save();
         }
     }
 
     private void SelectWeapons()
     {
-        firstWeapon = firstWeapons.LastOrDefault(w => w.Selected);
+        firstWeapon = firstWeapons.LastOrDefault(w => w.idWeapon == YandexGame.savesData.selectedFirstWeapon);
         if (firstWeapon == null)
         {
             firstWeapons.ForEach(w => w.Deselect());
@@ -106,13 +131,16 @@ public class WeaponService : MonoBehaviour
 
         }
         firstWeapon.Select();
-        secondWeapon = secondWeapons.LastOrDefault(w => w.Selected);
+        secondWeapon = secondWeapons.LastOrDefault(w => w.idWeapon == YandexGame.savesData.selectedSecondWeapon);
         if (secondWeapon == null)
         {
             secondWeapons.ForEach(w => w.Deselect());
             secondWeapon = secondWeapons[0];
-            secondWeapon.Select();
+            
         }
         secondWeapon.Select();
+      
+        Saver.instance.Save();
+ 
     } 
 }

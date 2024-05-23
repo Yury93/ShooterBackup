@@ -7,7 +7,8 @@ namespace Unity.FPS.UI
 {
     public class WeaponHUDManager : MonoBehaviour
     {
-        public bool isMobile;
+        // public bool isMobile = true;
+         public bool isMobile => Application.isMobilePlatform;
         [Tooltip("UI panel containing the layoutGroup for displaying weapon ammo")]
         public RectTransform AmmoPanel;
 
@@ -23,7 +24,7 @@ namespace Unity.FPS.UI
         public Joystick moveJoystick;
 
         public static WeaponHUDManager instance;
-        public EventButton jumpButton, shotButton;
+        public EventButton jumpButton, shotButton,weaponFirst,weaponSecond;
 
         private void Awake()
         {
@@ -64,8 +65,11 @@ namespace Unity.FPS.UI
             {
                 item.gameObject.SetActive(false);
             }
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            if (FinalPopup.IsGameOver == false)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
         }
         private void EnableMobileGUI()
         {
@@ -114,6 +118,17 @@ namespace Unity.FPS.UI
         void ChangeWeapon(WeaponController weapon)
         {
             UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(AmmoPanel);
+        }
+        private void OnApplicationFocus(bool focus)
+        {
+            if(focus)
+            {
+                Camera.main.GetComponent<AudioListener>().enabled = true;
+            }
+            else
+            {
+                Camera.main.GetComponent<AudioListener>().enabled = false;
+            }
         }
     }
 }

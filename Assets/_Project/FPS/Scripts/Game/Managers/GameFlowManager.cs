@@ -33,12 +33,16 @@ namespace Unity.FPS.Game
         float m_TimeLoadEndGameScene;
         string m_SceneToLoad;
         public static GameFlowManager instance;
+        public bool IsPopup;
+        public FinalPopup finalPopup;
 
         void Awake()
         {
             instance = this;
             EventManager.AddListener<AllObjectivesCompletedEvent>(OnAllObjectivesCompleted);
             EventManager.AddListener<PlayerDeathEvent>(OnPlayerDeath);
+            finalPopup.Init();
+            IsPopup = false;
         }
 
         void Start()
@@ -48,19 +52,21 @@ namespace Unity.FPS.Game
 
         void Update()
         {
-            if (GameIsEnding)
+            if (GameIsEnding && IsPopup == false)
             {
-                float timeRatio = 1 - (m_TimeLoadEndGameScene - Time.time) / EndSceneLoadDelay;
-                EndGameFadeCanvasGroup.alpha = timeRatio;
+                //float timeRatio = 1 - (m_TimeLoadEndGameScene - Time.time) / EndSceneLoadDelay;
+                //EndGameFadeCanvasGroup.alpha = timeRatio;
 
-                AudioUtility.SetMasterVolume(1 - timeRatio);
+                //AudioUtility.SetMasterVolume(1 - timeRatio);
 
-                // See if it's time to load the end scene (after the delay)
-                if (Time.time >= m_TimeLoadEndGameScene)
-                {
-                    SceneManager.LoadScene(m_SceneToLoad);
-                    GameIsEnding = false;
-                }
+                //// See if it's time to load the end scene (after the delay)
+                //if (Time.time >= m_TimeLoadEndGameScene)
+                //{
+                //    SceneManager.LoadScene(m_SceneToLoad);
+                //    GameIsEnding = false;
+                //}
+                IsPopup = true;
+                finalPopup.Open();
             }
         }
 

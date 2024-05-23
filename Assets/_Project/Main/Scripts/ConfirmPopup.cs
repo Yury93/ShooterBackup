@@ -1,9 +1,11 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using YG;
 
 public class ConfirmPopup : MonoBehaviour
 {
@@ -27,9 +29,8 @@ public class ConfirmPopup : MonoBehaviour
     private void BuyLevel()
     {
         if (levelButton != null && ResourceSystem.instance.HasMoney(levelButton.cost))
-        {
-            int savedKey = PlayerPrefs.GetInt(LevelButton.KEY_SAVED + levelButton.idButton);
-            if (savedKey != levelButton.idButton)
+        { 
+            if (levelButton.IsBuyed == false)
             {
                 levelButton.Buy();
                 Close();
@@ -54,8 +55,8 @@ public class ConfirmPopup : MonoBehaviour
     {
         if (weaponButton != null && ResourceSystem.instance.HasMoney(weaponButton.cost))
         {
-            int savedKey = PlayerPrefs.GetInt(WeaponButton.KEY_SAVED + weaponButton.typeWeapon + weaponButton.idWeapon);
-            if (savedKey != weaponButton.idWeapon)
+             
+            if (weaponButton.IsBuyed == false)
             {
                 weaponButton.Buy();
                 Close();
@@ -65,6 +66,13 @@ public class ConfirmPopup : MonoBehaviour
                 Close();
             }
         }
+     
+    }
+    [ContextMenu("Add money")]
+    public void AddMoney()
+    {
+        ResourceSystem.instance.money = 900;
+        Saver.instance.Save();
     }
 
     public void OpenButtonLevel(LevelButton levelButton)
@@ -114,3 +122,4 @@ public class ResourceSystem
         money += cost;
     }
 }
+

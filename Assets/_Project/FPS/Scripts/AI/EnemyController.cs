@@ -3,6 +3,7 @@ using Unity.FPS.Game;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using YG;
 
 namespace Unity.FPS.AI
 {
@@ -408,7 +409,8 @@ namespace Unity.FPS.AI
 
             // tells the game flow manager to handle the enemy destuction
             m_EnemyManager.UnregisterEnemy(this);
-
+            YandexGame.savesData.enemyDied += 1;
+            Saver.instance.Save();
             // loot an object
             if (TryDropItem())
             {

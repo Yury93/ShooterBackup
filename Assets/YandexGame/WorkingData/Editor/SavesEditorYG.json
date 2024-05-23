@@ -1,0 +1,36 @@
+{
+    "idSave": 705,
+    "isFirstSession": false,
+    "language": "ru",
+    "promptDone": false,
+    "money": 2,
+    "enemyDied": 1,
+    "newPlayerName": "Hello!",
+    "openLevels": [
+        false,
+        true,
+        false
+    ],
+    "weaponsFirst": [
+        0,
+        1,
+        2,
+        3
+    ],
+    "weaponsSecond": [
+        0,
+        1,
+        2,
+        3,
+        4
+    ],
+    "selectedFirstWeapon": 3,
+    "selectedSecondWeapon": 4,
+    "levels": [
+        0,
+        -1,
+        -1
+    ],
+    "selectedLevel": 0,
+    "ValueSlider": 500.0
+}

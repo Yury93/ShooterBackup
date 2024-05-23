@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using YG;
 
 public class WeaponButton : MonoBehaviour
 {
@@ -11,11 +13,9 @@ public class WeaponButton : MonoBehaviour
     public enum TypeWeapon{first,second}
     public enum StateButton { open, close }
     public int idWeapon;
-    public const string KEY_SAVED = "WEAPON_BUTTON";
-    public const string KEY_Selected = "WEAPON_selected";
     public StateButton state;
     public TypeWeapon typeWeapon;
-    public bool IsSelect;
+    public bool IsSelect => Selected;
     public Button button;
     public Image toogleImage, lockImage;
     public Outline outline;
@@ -23,8 +23,61 @@ public class WeaponButton : MonoBehaviour
 
     public Action<WeaponButton> onClick;
     public Action<WeaponButton> onBuy;
-    public bool IsBuyed => PlayerPrefs.GetInt(KEY_SAVED + typeWeapon + idWeapon) == idWeapon;
-    public bool Selected => PlayerPrefs.GetInt(KEY_Selected + typeWeapon + idWeapon) == 5;
+    public bool IsBuyed
+    {
+        get
+        {
+            if (typeWeapon == TypeWeapon.first)
+            {
+                for (int i = 0; i < YandexGame.savesData.weaponsFirst.Length; i++)
+                {
+                    if (idWeapon == i && YandexGame.savesData.weaponsFirst[idWeapon] == -1)
+                    {
+                        return false; 
+                    }
+                }
+            }
+            if (typeWeapon == TypeWeapon.second)
+            {
+                for (int i = 0; i < YandexGame.savesData.weaponsSecond.Length; i++)
+                {
+                    if ( idWeapon  == i && YandexGame.savesData.weaponsSecond[idWeapon] == -1)
+                    {
+                        return false; 
+                    }
+                }
+              
+            }
+
+            return true;
+        }
+    }
+    public bool Selected
+    {
+        get
+        {
+            if (typeWeapon == TypeWeapon.first)
+            {
+                return YandexGame.savesData.selectedFirstWeapon == idWeapon;
+            }
+            else if (typeWeapon == TypeWeapon.first && idWeapon == 0 && YandexGame.savesData.selectedFirstWeapon == 0)
+            {
+                return true;
+            }
+            if (typeWeapon == TypeWeapon.second)
+            {
+               
+                return YandexGame.savesData.selectedSecondWeapon == idWeapon;
+                
+            }
+            else if (typeWeapon == TypeWeapon.second && idWeapon == 0 && YandexGame.savesData.selectedSecondWeapon == 0)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+    Coroutine corShowState;
     public void Init()
     {
         button.onClick.AddListener(Click);
@@ -35,57 +88,74 @@ public class WeaponButton : MonoBehaviour
     private void Click()
     {
         onClick?.Invoke(this);
-       
+        ShowState();
     }
     public void Select()
     {
         if(state == StateButton.open)
         { 
-            IsSelect = true;
-            PlayerPrefs.SetInt(KEY_Selected + typeWeapon + idWeapon, 5);
-            ShowState();
+            if (typeWeapon == TypeWeapon.first)
+            {
+                YandexGame.savesData.selectedFirstWeapon = idWeapon;
+            }
+            if (typeWeapon == TypeWeapon.second)
+            {
+                YandexGame.savesData.selectedSecondWeapon = idWeapon;
+            } 
         }
+        ShowState();
     }
     public void Deselect()
     { 
-        IsSelect = false;
-        PlayerPrefs.SetInt(KEY_Selected + typeWeapon + idWeapon, 0);
+        if(typeWeapon == TypeWeapon.first)
+        YandexGame.savesData.selectedFirstWeapon = 0;
+        if (typeWeapon == TypeWeapon.second)
+            YandexGame.savesData.selectedSecondWeapon = 0;
         ShowState();
     }
     public void ShowState()
     {
+        if (corShowState != null) { StopCoroutine(corShowState); corShowState = null; }
+        corShowState = StartCoroutine(CorShow());
         toogleImage.gameObject.SetActive(false);
-        if(IsBuyed)
+        IEnumerator CorShow()
         {
-            state = StateButton.open;
-        }
-        if (state == StateButton.open)
-        {
-            lockImage.gameObject.SetActive(false);
-            if (IsSelect == false)
-                outline.effectColor = Color.black;
-            else
+            yield return new WaitForSeconds(0.01f);
+            if (WeaponService.instance == null) yield break;
+            if (IsBuyed)
             {
-                outline.effectColor = Color.green;
-                toogleImage.gameObject.SetActive(true);
+                state = StateButton.open;
             }
-            costText.gameObject.SetActive(false);
-        }
-        else
-        {
-
-            lockImage.gameObject.SetActive(true);
-            outline.effectColor = Color.black;
-            costText.text = cost.ToString();
-            costText.color = Color.red;
-            if (ResourceSystem.instance.HasMoney(cost))
+            if (state == StateButton.open)
             {
                 lockImage.gameObject.SetActive(false);
-                outline.effectColor = Color.yellow;
-                costText.color = Color.green;
+                toogleImage.gameObject.SetActive(false);
+                if (IsSelect == false)
+                    outline.effectColor = Color.black;
+                else
+                {
+                    outline.effectColor = Color.green;
+                    toogleImage.gameObject.SetActive(true);
+                }
+                costText.gameObject.SetActive(false);
             }
+            else
+            {
 
+                lockImage.gameObject.SetActive(true);
+                outline.effectColor = Color.black;
+                costText.text = cost.ToString();
+                costText.color = Color.red;
+                if (ResourceSystem.instance.HasMoney(cost))
+                {
+                    lockImage.gameObject.SetActive(false);
+                    outline.effectColor = Color.yellow;
+                    costText.color = Color.green;
+                }
+
+            }
         }
+       
     }
 
     public void Buy()
@@ -93,11 +163,15 @@ public class WeaponButton : MonoBehaviour
         if(ResourceSystem.instance.HasMoney(cost))
         {
             state = StateButton.open;
-            PlayerPrefs.SetInt(KEY_SAVED + typeWeapon + idWeapon, idWeapon);
+            if(typeWeapon == TypeWeapon.first)
+            YandexGame.savesData.weaponsFirst[idWeapon] = idWeapon;
+            if (typeWeapon == TypeWeapon.second)
+                YandexGame.savesData.weaponsSecond[idWeapon] = idWeapon;
+
             ResourceSystem.instance.TakeMoney(cost);
             onBuy?.Invoke(this);
         }
      
-        ShowState();
+ 
     }
 }

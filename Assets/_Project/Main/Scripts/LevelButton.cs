@@ -5,6 +5,7 @@ using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using YG;
 
 public class LevelButton : MonoBehaviour
 {
@@ -20,13 +21,37 @@ public class LevelButton : MonoBehaviour
     public string nameLoaded;
     public Button button;
     public Outline outline;
-    public bool isSelect;
+
     public static string SelectScene;
     public int cost;
 
     public Action<LevelButton> onClick;
     public const string KEY_SAVED = "LEVELBUTTON";
-    public bool IsBuyed => PlayerPrefs.GetInt(KEY_SAVED + idButton) == idButton;
+
+    public bool IsSelect
+    {
+        get
+        { 
+            var idSelected = YandexGame.savesData.selectedLevel;
+           if(idSelected == idButton) return true;
+           else return false;
+        }
+    }
+    public bool IsBuyed
+    {
+        get
+        {
+            var levels = YandexGame.savesData.levels;
+            for (int i = 0; i < levels.Length; i++)
+            {
+                if (levels[i] == idButton)
+                {
+                    return true; 
+                }
+            }
+            return false;
+        }
+    }
     public TextMeshProUGUI costText;
 
     private void Start()
@@ -39,17 +64,18 @@ public class LevelButton : MonoBehaviour
         if(state == StateLevel.open)
         {
             SelectScene = nameLoaded;
-            isSelect = true;
+          YandexGame.savesData.selectedLevel = idButton;
         }
         ShowState();
         onClick?.Invoke(this);
+        Saver.instance.Save();
     }
 
     public void ShowState()
     {
-       int savedKey = PlayerPrefs.GetInt(KEY_SAVED + idButton);
+       //int savedKey = PlayerPrefs.GetInt(KEY_SAVED + idButton);
 
-        if(savedKey == idButton)
+        if(IsBuyed)
         {
             state = StateLevel.open;
         }
@@ -57,7 +83,7 @@ public class LevelButton : MonoBehaviour
         if (state == StateLevel.open)
         {
            lockImage.gameObject.SetActive(false); 
-            if(isSelect)
+            if(IsSelect)
             {
                 selectImage.gameObject.SetActive(true);
                 outline.effectColor = Color.green;
@@ -92,12 +118,14 @@ public class LevelButton : MonoBehaviour
     }
     public void Buy()
     {
-        PlayerPrefs.SetInt(KEY_SAVED + idButton, idButton);
+        //PlayerPrefs.SetInt(KEY_SAVED + idButton, idButton);
+        YandexGame.savesData.levels[idButton] = idButton;
         ResourceSystem.instance.TakeMoney(cost);
         SelectScene = nameLoaded;
-        isSelect = true;
+        YandexGame.savesData.selectedLevel = idButton;
         state = StateLevel.open;
         ShowState();
         LevelService.instance.ClickLevel(this);
+        Saver.instance.Save();
     }
 }

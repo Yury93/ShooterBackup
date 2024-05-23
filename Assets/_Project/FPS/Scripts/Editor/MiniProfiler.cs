@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Unity.FPS.AI;
-using Unity.FPS.Game;
+
+ 
 
 using UnityEditor;
 using UnityEngine;
@@ -74,10 +74,10 @@ namespace Unity.FPS.EditorExt
             }
             else
             {
-                if (GUILayout.Button("Analyze"))
-                {
-                    AnalyzeLevel();
-                }
+                //if (GUILayout.Button("Analyze"))
+                //{
+                //    AnalyzeLevel();
+                //}
 
                 if (m_LevelAnalysisString != null && m_LevelAnalysisString != "")
                 {
@@ -112,7 +112,7 @@ namespace Unity.FPS.EditorExt
             {
                 if (m_MustLaunchHeatmapNextFrame)
                 {
-                    DoPolycountMap();
+                  //  DoPolycountMap();
                     m_CellTransparency = 0.9f;
                     m_CellThreshold = 0f;
                     m_MustLaunchHeatmapNextFrame = false;
@@ -210,7 +210,7 @@ namespace Unity.FPS.EditorExt
         {
             ClearAnalysis();
             EditorStyles.textArea.wordWrap = true;
-            MeshCombiner mainMeshCombiner = GameObject.FindObjectOfType<MeshCombiner>();
+           // MeshCombiner mainMeshCombiner = GameObject.FindObjectOfType<MeshCombiner>();
 
             // Analyze
             MeshFilter[] meshFilters = GameObject.FindObjectsOfType<MeshFilter>();
@@ -228,27 +228,27 @@ namespace Unity.FPS.EditorExt
                 polyCount += mf.sharedMesh.triangles.Length / 3;
 
                 bool willBeCombined = false;
-                if (mainMeshCombiner)
-                {
-                    foreach (GameObject combineParent in mainMeshCombiner.CombineParents)
-                    {
-                        if (mf.transform.IsChildOf(combineParent.transform))
-                        {
-                            willBeCombined = true;
-                        }
-                    }
-                }
+                //if (mainMeshCombiner)
+                //{
+                //    foreach (GameObject combineParent in mainMeshCombiner.CombineParents)
+                //    {
+                //        if (mf.transform.IsChildOf(combineParent.transform))
+                //        {
+                //            willBeCombined = true;
+                //        }
+                //    }
+                //}
 
-                if (!willBeCombined)
-                {
-                    if (!(/*mf.GetComponentInParent<PlayerCharacterController>() ||*/
-                          mf.GetComponentInParent<EnemyController>() ||
-                          //mf.GetComponentInParent<Pickup>() ||
-                          mf.GetComponentInParent<Objective>()))
-                    {
-                        nonCombinedMeshCount++;
-                    }
-                }
+                //if (!willBeCombined)
+                //{
+                //    if (!(/*mf.GetComponentInParent<PlayerCharacterController>() ||*/
+                //          //mf.GetComponentInParent<EnemyController>() ||
+                //          ////mf.GetComponentInParent<Pickup>() ||
+                //          //mf.GetComponentInParent<Objective>()))
+                //    {
+                //        nonCombinedMeshCount++;
+                //    }
+                //}
             }
 
             foreach (SkinnedMeshRenderer sm in skinnedMeshes)
@@ -266,7 +266,7 @@ namespace Unity.FPS.EditorExt
             }
 
             int lightsCount = GameObject.FindObjectsOfType<Light>().Length;
-            int enemyCount = GameObject.FindObjectsOfType<EnemyController>().Length;
+            //int enemyCount = GameObject.FindObjectsOfType<EnemyController>().Length;
 
             // Level analysis 
             m_LevelAnalysisString += "- Meshes count: " + meshCount;
@@ -279,7 +279,7 @@ namespace Unity.FPS.EditorExt
             m_LevelAnalysisString += k_NewLine;
             m_LevelAnalysisString += "- Lights count: " + lightsCount;
             m_LevelAnalysisString += k_NewLine;
-            m_LevelAnalysisString += "- Enemy count: " + enemyCount;
+            //m_LevelAnalysisString += "- Enemy count: " + enemyCount;
 
             // Suggestions
             if (nonCombinedMeshCount > 50)
@@ -299,43 +299,43 @@ namespace Unity.FPS.EditorExt
             Renderer[] allRenderers = GameObject.FindObjectsOfType<Renderer>();
 
             // Get level bounds and list of bounds & polycount
-            for (int i = 0; i < allRenderers.Length; i++)
-            {
-                Renderer r = allRenderers[i];
-                if (r.gameObject.GetComponent<IgnoreHeatMap>())
-                    continue;
+            //for (int i = 0; i < allRenderers.Length; i++)
+            //{
+            //    //Renderer r = allRenderers[i];
+            //    //if (r.gameObject.GetComponent<IgnoreHeatMap>())
+            //    //    continue;
 
-                levelBounds.Encapsulate(r.bounds);
+            //    levelBounds.Encapsulate(r.bounds);
 
-                MeshRenderer mr = (r as MeshRenderer);
-                if (mr)
-                {
-                    MeshFilter mf = r.GetComponent<MeshFilter>();
-                    if (mf && mf.sharedMesh != null)
-                    {
-                        BoundsAndCount b = new BoundsAndCount();
-                        b.Bounds = r.bounds;
-                        b.Count = mf.sharedMesh.triangles.Length / 3;
+            //    MeshRenderer mr = (r as MeshRenderer);
+            //    if (mr)
+            //    {
+            //        MeshFilter mf = r.GetComponent<MeshFilter>();
+            //        if (mf && mf.sharedMesh != null)
+            //        {
+            //            BoundsAndCount b = new BoundsAndCount();
+            //            b.Bounds = r.bounds;
+            //            b.Count = mf.sharedMesh.triangles.Length / 3;
 
-                        meshBoundsAndCount.Add(b);
-                    }
-                }
-                else
-                {
-                    SkinnedMeshRenderer smr = (r as SkinnedMeshRenderer);
-                    if (smr)
-                    {
-                        if (smr.sharedMesh != null)
-                        {
-                            BoundsAndCount b = new BoundsAndCount();
-                            b.Bounds = r.bounds;
-                            b.Count = smr.sharedMesh.triangles.Length / 3;
+            //            meshBoundsAndCount.Add(b);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        SkinnedMeshRenderer smr = (r as SkinnedMeshRenderer);
+            //        if (smr)
+            //        {
+            //            if (smr.sharedMesh != null)
+            //            {
+            //                BoundsAndCount b = new BoundsAndCount();
+            //                b.Bounds = r.bounds;
+            //                b.Count = smr.sharedMesh.triangles.Length / 3;
 
-                            meshBoundsAndCount.Add(b);
-                        }
-                    }
-                }
-            }
+            //                meshBoundsAndCount.Add(b);
+            //            }
+            //        }
+            //    }
+            //}
 
             Vector3 boundsBottomCorner = levelBounds.center - levelBounds.extents;
             Vector3Int gridResolution = new Vector3Int(Mathf.CeilToInt((levelBounds.extents.x * 2f) / k_CellSize),

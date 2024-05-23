@@ -1,9 +1,7 @@
-using JetBrains.Annotations;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using YG;
 
 public class SensivitySettings : MonoBehaviour
 {
@@ -11,23 +9,35 @@ public class SensivitySettings : MonoBehaviour
     public static float ValueSlider;
     public Button close, save;
 
-    public void Init()
+    public void Init(LevelService levelService)
     {
         close.onClick.AddListener(Close);
         save.onClick.AddListener(Save);
-        Debug.LogError("HAS SAVES SETTING?");
-        if (ValueSlider == 0)
+        //Debug.LogError("HAS SAVES SETTING?");
+       
+            levelService.StartCoroutine(CorStartSettings());
+   
+        IEnumerator CorStartSettings()
         {
-            slider.value = 0.5f;
-            if (Application.isMobilePlatform)
-            { 
-                ValueSlider = slider.value * 10;
-            }
-            else
-            { 
-                ValueSlider = slider.value * 1000;
+            yield return new WaitForSeconds(0.1f);
+            ValueSlider = YandexGame.savesData.ValueSlider;
+            if (ValueSlider == -1)
+            {
+                slider.value = 0.5f;
+                if (Application.isMobilePlatform)
+                {
+                    ValueSlider = slider.value * 10;
+                }
+                else
+                {
+                    ValueSlider = slider.value * 1000;
+                }
+                YandexGame.savesData.ValueSlider = ValueSlider;
+
+                Saver.instance.Save();
             }
         }
+         
 
     
         gameObject.SetActive(false);
@@ -56,6 +66,9 @@ public class SensivitySettings : MonoBehaviour
         {
             ValueSlider = slider.value * 1000;
         }
+        YandexGame.savesData.ValueSlider = ValueSlider;
+
+        Saver.instance.Save();
         Close();
     }
 
